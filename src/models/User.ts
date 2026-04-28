@@ -53,6 +53,22 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: false
     },
+    emailVerificationOTP: {
+      type: String,
+      select: false
+    },
+    emailVerificationOTPExpires: {
+      type: Date,
+      select: false
+    },
+    passwordResetOTP: {
+      type: String,
+      select: false
+    },
+    passwordResetOTPExpires: {
+      type: Date,
+      select: false
+    },
     lastLogin: {
       type: Date
     },

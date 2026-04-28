@@ -63,6 +63,10 @@ export interface IUser {
   role: UserRole;
   isActive: boolean;
   isEmailVerified: boolean;
+  emailVerificationOTP?: string;
+  emailVerificationOTPExpires?: Date;
+  passwordResetOTP?: string;
+  passwordResetOTPExpires?: Date;
   oauthProviders: IOAuthProvider;
   streamingAccounts: IStreamingAccount;
   wallets: IWalletBalance[];

@@ -29,6 +29,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-twitch": "^1.0.3",
+    "resend": "^6.12.2",
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {

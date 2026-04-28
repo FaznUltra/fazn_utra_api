@@ -112,7 +112,92 @@ export const updateUserRoleSchema = Joi.object({
     .valid(...Object.values(UserRole))
     .required()
     .messages({
-      'any.only': 'Invalid role specified',
-      'any.required': 'Role is required'
+      'any.required': 'Role is required',
+      'any.only': 'Invalid role'
+    })
+});
+
+export const verifyEmailSchema = Joi.object({
+  userId: Joi.string()
+    .required()
+    .messages({
+      'any.required': 'User ID is required',
+      'string.empty': 'User ID cannot be empty'
+    }),
+  otp: Joi.string()
+    .length(6)
+    .pattern(/^[0-9]+$/)
+    .required()
+    .messages({
+      'any.required': 'Verification code is required',
+      'string.empty': 'Verification code cannot be empty',
+      'string.length': 'Verification code must be 6 digits',
+      'string.pattern.base': 'Verification code must contain only numbers'
+    })
+});
+
+export const resendVerificationEmailSchema = Joi.object({
+  userId: Joi.string()
+    .required()
+    .messages({
+      'any.required': 'User ID is required',
+      'string.empty': 'User ID cannot be empty'
+    })
+});
+
+export const forgotPasswordSchema = Joi.object({
+  email: Joi.string()
+    .email()
+    .required()
+    .messages({
+      'any.required': 'Email is required',
+      'string.empty': 'Email cannot be empty',
+      'string.email': 'Please provide a valid email'
+    })
+});
+
+export const verifyPasswordResetOTPSchema = Joi.object({
+  userId: Joi.string()
+    .required()
+    .messages({
+      'any.required': 'User ID is required',
+      'string.empty': 'User ID cannot be empty'
+    }),
+  otp: Joi.string()
+    .length(6)
+    .pattern(/^[0-9]+$/)
+    .required()
+    .messages({
+      'any.required': 'Reset code is required',
+      'string.empty': 'Reset code cannot be empty',
+      'string.length': 'Reset code must be 6 digits',
+      'string.pattern.base': 'Reset code must contain only numbers'
+    })
+});
+
+export const resetPasswordSchema = Joi.object({
+  userId: Joi.string()
+    .required()
+    .messages({
+      'any.required': 'User ID is required',
+      'string.empty': 'User ID cannot be empty'
+    }),
+  otp: Joi.string()
+    .length(6)
+    .pattern(/^[0-9]+$/)
+    .required()
+    .messages({
+      'any.required': 'Reset code is required',
+      'string.empty': 'Reset code cannot be empty',
+      'string.length': 'Reset code must be 6 digits',
+      'string.pattern.base': 'Reset code must contain only numbers'
+    }),
+  newPassword: Joi.string()
+    .min(8)
+    .required()
+    .messages({
+      'any.required': 'New password is required',
+      'string.empty': 'New password cannot be empty',
+      'string.min': 'New password must be at least 8 characters'
     })
 });

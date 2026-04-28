@@ -7,7 +7,12 @@ import {
   updatePassword,
   updateUserRole,
   getAllUsers,
-  deactivateUser
+  deactivateUser,
+  verifyEmail,
+  resendVerificationEmail,
+  forgotPassword,
+  verifyPasswordResetOTP,
+  resetPassword
 } from '../controllers/auth.controller';
 import { protect, restrictTo } from '../middleware/auth';
 import { validate } from '../middleware/validate';
@@ -15,7 +20,12 @@ import {
   registerSchema,
   loginSchema,
   updatePasswordSchema,
-  updateUserRoleSchema
+  updateUserRoleSchema,
+  verifyEmailSchema,
+  resendVerificationEmailSchema,
+  forgotPasswordSchema,
+  verifyPasswordResetOTPSchema,
+  resetPasswordSchema
 } from '../validators/auth.validator';
 import { UserRole } from '../types';
 
@@ -24,6 +34,11 @@ const router = Router();
 router.post('/register', validate(registerSchema), register);
 router.post('/login', validate(loginSchema), login);
 router.post('/logout', logout);
+router.post('/verify-email', validate(verifyEmailSchema), verifyEmail);
+router.post('/resend-verification', validate(resendVerificationEmailSchema), resendVerificationEmail);
+router.post('/forgot-password', validate(forgotPasswordSchema), forgotPassword);
+router.post('/verify-reset-otp', validate(verifyPasswordResetOTPSchema), verifyPasswordResetOTP);
+router.post('/reset-password', validate(resetPasswordSchema), resetPassword);
 
 router.use(protect);
 
