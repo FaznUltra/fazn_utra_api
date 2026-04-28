@@ -10,11 +10,19 @@ export const register = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { email, password, firstName, lastName } = req.body;
+    const { email, password, firstName, lastName, username } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ 
+      $or: [{ email }, { username }] 
+    });
+    
     if (existingUser) {
-      return next(new AppError('Email already registered', 400));
+      if (existingUser.email === email) {
+        return next(new AppError('Email already registered', 400));
+      }
+      if (existingUser.username === username) {
+        return next(new AppError('Username already taken', 400));
+      }
     }
 
     const user = await User.create({
@@ -22,6 +30,7 @@ export const register = async (
       password,
       firstName,
       lastName,
+      username,
       role: UserRole.USER
     });
 

@@ -1,6 +1,6 @@
 import mongoose, { Schema, Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { IUser, UserRole } from '../types';
+import { IUser, UserRole, Currency } from '../types';
 
 const userSchema = new Schema<IUser>(
   {
@@ -30,6 +30,16 @@ const userSchema = new Schema<IUser>(
       trim: true,
       maxlength: [50, 'Last name cannot exceed 50 characters']
     },
+    username: {
+      type: String,
+      required: [true, 'Username is required'],
+      unique: true,
+      trim: true,
+      lowercase: true,
+      minlength: [3, 'Username must be at least 3 characters'],
+      maxlength: [30, 'Username cannot exceed 30 characters'],
+      match: [/^[a-z0-9_]+$/, 'Username can only contain lowercase letters, numbers, and underscores']
+    },
     role: {
       type: String,
       enum: Object.values(UserRole),
@@ -45,7 +55,63 @@ const userSchema = new Schema<IUser>(
     },
     lastLogin: {
       type: Date
-    }
+    },
+    streamingAccounts: {
+      youtube: {
+        channelId: { type: String },
+        channelName: { type: String },
+        isVerified: { type: Boolean, default: false },
+        verifiedAt: { type: Date }
+      },
+      twitch: {
+        username: { type: String },
+        channelId: { type: String },
+        isVerified: { type: Boolean, default: false },
+        verifiedAt: { type: Date }
+      }
+    },
+    wallets: [
+      {
+        currency: {
+          type: String,
+          enum: ['NGN', 'USD'],
+          required: true
+        },
+        balance: {
+          type: Number,
+          default: 0,
+          min: [0, 'Balance cannot be negative']
+        }
+      }
+    ],
+    rankings: [
+      {
+        gameId: {
+          type: String,
+          required: true
+        },
+        rank: {
+          type: Number,
+          default: 0
+        },
+        wins: {
+          type: Number,
+          default: 0
+        },
+        losses: {
+          type: Number,
+          default: 0
+        },
+        draws: {
+          type: Number,
+          default: 0
+        },
+        totalEarnings: {
+          type: Number,
+          default: 0
+        }
+      }
+    ]
   },
   {
     timestamps: true,
@@ -60,6 +126,13 @@ const userSchema = new Schema<IUser>(
 );
 
 userSchema.pre('save', async function (next) {
+  if (this.isNew && (!this.wallets || this.wallets.length === 0)) {
+    this.wallets = [
+      { currency: Currency.NGN, balance: 0 },
+      { currency: Currency.USD, balance: 0 }
+    ];
+  }
+
   if (!this.isModified('password')) return next();
 
   const rounds = parseInt(process.env.BCRYPT_ROUNDS || '12', 10);

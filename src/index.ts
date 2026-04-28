@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import { connectDatabase } from './config/database';
 import authRoutes from './routes/auth.routes';
+import gameRoutes from './routes/game.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { AppError } from './utils/AppError';
 
@@ -61,6 +62,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/games', gameRoutes);
 
 app.all('*', (req: Request, _res: Response, next) => {
   next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));

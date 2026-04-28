@@ -48,6 +48,19 @@ export const registerSchema = Joi.object({
       'string.min': 'Last name must be at least 2 characters long',
       'string.max': 'Last name cannot exceed 50 characters',
       'any.required': 'Last name is required'
+    }),
+  username: Joi.string()
+    .min(3)
+    .max(30)
+    .required()
+    .trim()
+    .lowercase()
+    .pattern(/^[a-z0-9_]+$/)
+    .messages({
+      'string.min': 'Username must be at least 3 characters long',
+      'string.max': 'Username cannot exceed 30 characters',
+      'string.pattern.base': 'Username can only contain lowercase letters, numbers, and underscores',
+      'any.required': 'Username is required'
     })
 });
 
