@@ -42,16 +42,28 @@ export interface IGameRank {
   totalEarnings: number;
 }
 
+export interface IOAuthProvider {
+  google?: {
+    id: string;
+    email: string;
+  };
+  twitch?: {
+    id: string;
+    username: string;
+  };
+}
+
 export interface IUser {
   _id: string;
   email: string;
-  password: string;
+  password?: string;
   firstName: string;
   lastName: string;
   username: string;
   role: UserRole;
   isActive: boolean;
   isEmailVerified: boolean;
+  oauthProviders: IOAuthProvider;
   streamingAccounts: IStreamingAccount;
   wallets: IWalletBalance[];
   rankings: IGameRank[];

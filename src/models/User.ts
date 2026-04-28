@@ -14,7 +14,7 @@ const userSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      required: false,
       minlength: [8, 'Password must be at least 8 characters'],
       select: false
     },
@@ -55,6 +55,16 @@ const userSchema = new Schema<IUser>(
     },
     lastLogin: {
       type: Date
+    },
+    oauthProviders: {
+      google: {
+        id: { type: String },
+        email: { type: String }
+      },
+      twitch: {
+        id: { type: String },
+        username: { type: String }
+      }
     },
     streamingAccounts: {
       youtube: {
@@ -133,7 +143,7 @@ userSchema.pre('save', async function (next) {
     ];
   }
 
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password') || !this.password) return next();
 
   const rounds = parseInt(process.env.BCRYPT_ROUNDS || '12', 10);
   this.password = await bcrypt.hash(this.password, rounds);
