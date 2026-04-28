@@ -81,6 +81,9 @@ export interface AuthRequest extends Request {
   };
 }
 
+// Helper to cast Request to AuthRequest
+export const asAuthRequest = (req: Request): AuthRequest => req as AuthRequest;
+
 export interface JWTPayload extends JwtPayload {
   id: string;
   email: string;

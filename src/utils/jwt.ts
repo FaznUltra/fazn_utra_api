@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { Response } from 'express';
 import { JWTPayload, UserRole } from '../types';
 
@@ -7,9 +7,7 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const JWT_COOKIE_EXPIRES_IN = parseInt(process.env.JWT_COOKIE_EXPIRES_IN || '7', 10);
 
 export const generateToken = (id: string, email: string, role: UserRole): string => {
-  return jwt.sign({ id, email, role }, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN
-  });
+  return jwt.sign({ id, email, role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as SignOptions);
 };
 
 export const verifyToken = (token: string): JWTPayload => {

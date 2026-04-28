@@ -1,17 +1,18 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import Game from '../models/Game';
-import { AuthRequest } from '../types';
+import { asAuthRequest } from '../types';
 import { AppError } from '../utils/AppError';
 
 export const createGame = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
+    const authReq = asAuthRequest(req);
     const gameData = {
       ...req.body,
-      createdBy: req.user?.id
+      createdBy: authReq.user?.id
     };
 
     const game = await Game.create(gameData);
@@ -27,7 +28,7 @@ export const createGame = async (
 };
 
 export const getAllGames = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -64,7 +65,7 @@ export const getAllGames = async (
 };
 
 export const getGameById = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -87,7 +88,7 @@ export const getGameById = async (
 };
 
 export const getGamesByCategory = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -110,7 +111,7 @@ export const getGamesByCategory = async (
 };
 
 export const updateGame = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -141,7 +142,7 @@ export const updateGame = async (
 };
 
 export const deleteGame = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -168,7 +169,7 @@ export const deleteGame = async (
 };
 
 export const getActiveGames = async (
-  _req: AuthRequest,
+  _req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {

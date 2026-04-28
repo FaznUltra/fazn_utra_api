@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import User from '../models/User';
-import { AuthRequest, UserRole } from '../types';
+import { UserRole, asAuthRequest } from '../types';
 import { generateToken, sendTokenResponse } from '../utils/jwt';
 import { AppError } from '../utils/AppError';
 
@@ -104,12 +104,13 @@ export const logout = async (
 };
 
 export const getMe = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const user = await User.findById(req.user?.id);
+    const authReq = asAuthRequest(req);
+    const user = await User.findById(authReq.user?.id);
 
     if (!user) {
       return next(new AppError('User not found', 404));
@@ -125,14 +126,15 @@ export const getMe = async (
 };
 
 export const updatePassword = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const { currentPassword, newPassword } = req.body;
+    const authReq = asAuthRequest(req);
 
-    const user = await User.findById(req.user?.id).select('+password');
+    const user = await User.findById(authReq.user?.id).select('+password');
 
     if (!user) {
       return next(new AppError('User not found', 404));
@@ -160,15 +162,16 @@ export const updatePassword = async (
 };
 
 export const updateUserRole = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const { userId } = req.params;
     const { role } = req.body;
+    const authReq = asAuthRequest(req);
 
-    if (req.user?.id === userId) {
+    if (authReq.user?.id === userId) {
       return next(new AppError('You cannot change your own role', 400));
     }
 
@@ -178,8 +181,8 @@ export const updateUserRole = async (
       return next(new AppError('User not found', 404));
     }
 
-    if (user.role === UserRole.SUPER_ADMIN && req.user?.role !== UserRole.SUPER_ADMIN) {
-      return next(new AppError('Only super admins can modify super admin roles', 403));
+    if (user.role === UserRole.SUPER_ADMIN) {
+      return next(new AppError('Cannot modify super admin role', 403));
     }
 
     user.role = role;
@@ -196,7 +199,7 @@ export const updateUserRole = async (
 };
 
 export const getAllUsers = async (
-  _req: AuthRequest,
+  _req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -214,14 +217,15 @@ export const getAllUsers = async (
 };
 
 export const deactivateUser = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const { userId } = req.params;
+    const authReq = asAuthRequest(req);
 
-    if (req.user?.id === userId) {
+    if (authReq.user?.id === userId) {
       return next(new AppError('You cannot deactivate your own account', 400));
     }
 

@@ -1,11 +1,11 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AuthRequest, UserRole } from '../types';
 import { verifyToken } from '../utils/jwt';
 import { AppError } from '../utils/AppError';
 import User from '../models/User';
 
 export const protect = async (
-  req: AuthRequest,
+  req: Request,
   _res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -34,7 +34,7 @@ export const protect = async (
       return next(new AppError('Your account has been deactivated', 401));
     }
 
-    req.user = {
+    (req as AuthRequest).user = {
       id: currentUser._id.toString(),
       email: currentUser.email,
       role: currentUser.role
@@ -47,8 +47,9 @@ export const protect = async (
 };
 
 export const restrictTo = (...roles: UserRole[]) => {
-  return (req: AuthRequest, _res: Response, next: NextFunction): void => {
-    if (!req.user || !roles.includes(req.user.role)) {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    const authReq = req as AuthRequest;
+    if (!authReq.user || !roles.includes(authReq.user.role)) {
       return next(new AppError('You do not have permission to perform this action', 403));
     }
     next();
