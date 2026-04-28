@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as TwitchStrategy } from 'passport-twitch';
@@ -17,18 +20,19 @@ passport.deserializeUser(async (id: string, done) => {
   }
 });
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-      callbackURL: process.env.GOOGLE_CALLBACK_URL || '',
-      scope: [
-        'profile',
-        'email',
-        'https://www.googleapis.com/auth/youtube.readonly'
-      ]
-    },
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8000/api/oauth/google/callback',
+        scope: [
+          'profile',
+          'email',
+          'https://www.googleapis.com/auth/youtube.readonly'
+        ]
+      },
     async (_accessToken: any, _refreshToken: any, profile: any, done: any) => {
       try {
         const email = profile.emails?.[0]?.value;
@@ -89,15 +93,19 @@ passport.use(
     }
   )
 );
+} else {
+  console.warn('⚠️  Google OAuth not configured - GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET required');
+}
 
-passport.use(
-  new TwitchStrategy(
-    {
-      clientID: process.env.TWITCH_CLIENT_ID || '',
-      clientSecret: process.env.TWITCH_CLIENT_SECRET || '',
-      callbackURL: process.env.TWITCH_CALLBACK_URL || '',
-      scope: 'user:read:email'
-    },
+if (process.env.TWITCH_CLIENT_ID && process.env.TWITCH_CLIENT_SECRET) {
+  passport.use(
+    new TwitchStrategy(
+      {
+        clientID: process.env.TWITCH_CLIENT_ID,
+        clientSecret: process.env.TWITCH_CLIENT_SECRET,
+        callbackURL: process.env.TWITCH_CALLBACK_URL || 'http://localhost:8000/api/oauth/twitch/callback',
+        scope: 'user:read:email'
+      },
     async (_accessToken: any, _refreshToken: any, profile: any, done: any) => {
       try {
         const email = profile.email;
@@ -176,5 +184,8 @@ passport.use(
     }
   )
 );
+} else {
+  console.warn('⚠️  Twitch OAuth not configured - TWITCH_CLIENT_ID and TWITCH_CLIENT_SECRET required');
+}
 
 export default passport;

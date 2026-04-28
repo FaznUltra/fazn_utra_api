@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import cookieParser from 'cookie-parser';
@@ -12,8 +11,6 @@ import gameRoutes from './routes/game.routes';
 import oauthRoutes from './routes/oauth.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { AppError } from './utils/AppError';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
