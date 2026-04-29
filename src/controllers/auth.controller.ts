@@ -81,7 +81,9 @@ export const login = async (
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      role: user.role
+      username: user.username,
+      role: user.role,
+      isEmailVerified: user.isEmailVerified
     });
   } catch (error) {
     next(error);

@@ -19,12 +19,17 @@ export const googleCallback = (req: Request, res: Response, next: NextFunction):
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // Check if request is from mobile app (has custom scheme in referer or user agent)
+    // Check if request is from mobile app
     const isMobile = req.get('user-agent')?.includes('Expo') || req.query.mobile === 'true';
     
     if (isMobile) {
-      // Redirect to mobile app custom scheme
-      res.redirect(`faznultra://auth/oauth-callback?success=true`);
+      // For development with Expo Go, use exp:// scheme
+      // For production, use custom scheme faznultra://
+      const mobileRedirect = process.env.NODE_ENV === 'production'
+        ? 'faznultra://auth/oauth-callback?success=true'
+        : `${process.env.EXPO_REDIRECT_URL || 'exp://192.168.1.1:8081/--/auth/oauth-callback'}?success=true`;
+      
+      res.redirect(mobileRedirect);
     } else {
       // Redirect to web frontend
       res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
@@ -56,8 +61,13 @@ export const twitchCallback = (req: Request, res: Response, next: NextFunction):
     const isMobile = req.get('user-agent')?.includes('Expo') || req.query.mobile === 'true';
     
     if (isMobile) {
-      // Redirect to mobile app custom scheme
-      res.redirect(`faznultra://auth/oauth-callback?success=true`);
+      // For development with Expo Go, use exp:// scheme
+      // For production, use custom scheme faznultra://
+      const mobileRedirect = process.env.NODE_ENV === 'production'
+        ? 'faznultra://auth/oauth-callback?success=true'
+        : `${process.env.EXPO_REDIRECT_URL || 'exp://192.168.1.1:8081/--/auth/oauth-callback'}?success=true`;
+      
+      res.redirect(mobileRedirect);
     } else {
       // Redirect to web frontend
       res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
