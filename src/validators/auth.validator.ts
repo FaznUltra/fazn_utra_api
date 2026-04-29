@@ -194,10 +194,14 @@ export const resetPasswordSchema = Joi.object({
     }),
   newPassword: Joi.string()
     .min(8)
+    .max(128)
     .required()
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
     .messages({
+      'string.min': 'New password must be at least 8 characters long',
+      'string.max': 'New password cannot exceed 128 characters',
+      'string.pattern.base': 'New password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
       'any.required': 'New password is required',
-      'string.empty': 'New password cannot be empty',
-      'string.min': 'New password must be at least 8 characters'
+      'string.empty': 'New password cannot be empty'
     })
 });
